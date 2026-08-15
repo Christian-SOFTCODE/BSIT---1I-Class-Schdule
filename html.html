@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>BSIT 1I / Class Schedule</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --accent-cyan: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.35);
+      --badge-f2f: #0284c7;
+      --badge-online: #8b5cf6;
+      --badge-conflict: #ef4444;
+      --badge-announcement: #f59e0b;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      padding: 24px;
+      padding-left: max(24px, env(safe-area-inset-left));
+      padding-right: max(24px, env(safe-area-inset-right));
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+      min-height: 100vh;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .header-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .header-nav span { color: var(--accent-cyan); }
+
+    .title {
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .title span { color: var(--accent-cyan); }
+
+
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .filter-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent-cyan);
+      color: var(--text-main);
+    }
+
+
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: 1fr 450px;
+      gap: 24px;
+    }
+
+
+    .announcements-section, .day-section, .class-grid {
+      overflow: visible !important;
+    }
+
+
+    .announcements-section {
+      margin-bottom: 30px;
+      background: rgba(245, 158, 11, 0.05);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .announcements-header {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fbbf24;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+
+    .day-section { margin-bottom: 28px; }
+    .day-header {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+
+    .class-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+
+    .class-card {
+      position: relative;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      z-index: 1;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .class-card:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px var(--accent-glow);
+      transform: translateY(-2px);
+      z-index: 9999 !important;
+    }
+
+    .class-card.announcement-card { border-color: rgba(245, 158, 11, 0.5); }
+    .class-card.conflict { border-color: var(--badge-conflict); }
+
+    .time-slot {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-family: monospace;
+    }
+
+    .course-code {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text-main);
+    }
+
+    .course-name {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .notes-list {
+      font-size: 0.75rem;
+      color: #fbbf24;
+      margin: 8px 0;
+      padding-left: 16px;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .location-tag {
+      font-size: 0.8rem;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .type-badge {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .badge-f2f { background: rgba(2, 132, 199, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .badge-online { background: rgba(139, 92, 246, 0.2); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.3); }
+    .badge-conflict { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.3); }
+    .badge-announcement { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+
+    @media (min-width: 769px) {
+      .popover-preview {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: calc(100% + 12px) !important;
+        right: auto !important;
+        width: 260px;
+        background: var(--card-bg);
+        border: 1px solid var(--accent-cyan);
+        border-radius: 12px;
+        padding: 10px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.9);
+        z-index: 10000;
+        pointer-events: none;
+      }
+      .class-card:hover .popover-preview { display: block; }
+    }
+
+    @media (max-width: 768px) {
+      .popover-preview { display: none !important; }
+    }
+
+    .popover-preview img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .popover-title {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+
+    .map-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      height: fit-content;
+      position: sticky;
+      top: 24px;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 12px 18px;
+      background: #0b0f19;
+      border: 1px solid var(--card-border);
+      border-radius: 25px;
+      color: var(--text-main);
+      font-size: 16px; /* Prevents auto-zoom on iOS Safari */
+      margin-bottom: 16px;
+      transition: all 0.2s;
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .map-viewport {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1024 / 595;
+      height: auto;
+      background: #050811;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      cursor: zoom-in;
+    }
+
+    .map-container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      transform-origin: 0 0;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .map-img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill; 
+      display: block;
+    }
+
+
+    .map-marker {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      display: none;
+      flex-direction: column-reverse;
+      align-items: center;
+      transition: all 0.3s ease;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .map-marker.active { display: flex; }
+
+    .radar-pin-container {
+      position: relative;
+      width: 12px;
+      height: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .radar-dot {
+      width: 6px;
+      height: 6px;
+      background-color: #ef4444;
+      border: 1.5px solid #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #ef4444;
+      z-index: 2;
+    }
+
+    .wave-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 1.5px solid #ef4444;
+      border-radius: 50%;
+      animation: radarWaves 1.5s infinite ease-out;
+      opacity: 0;
+    }
+
+    .wave-ring:nth-child(2) {
+      animation-delay: 0.5s;
+    }
+
+    @keyframes radarWaves {
+      0% {
+        transform: scale(0.3);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(2.2);
+        opacity: 0;
+      }
+    }
+
+    .pin-label {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid #ef4444;
+      color: #fff;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    }
+
+
+    .location-details-card {
+      display: none;
+      margin-top: 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .location-details-card.active { display: block; }
+
+    .details-img-container {
+      position: relative;
+      width: 100%;
+      height: 150px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .details-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .close-details-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      border: none;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .details-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    .details-badges {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .details-badge {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+    }
+
+    .details-info {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 20000;
+      justify-content: center;
+      align-items: center;
+      cursor: zoom-out;
+      padding: 16px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      max-width: 100%;
+      max-height: 85%;
+      object-fit: contain;
+      border-radius: 12px;
+      border: 1px solid var(--accent-cyan);
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+
+    @media (max-width: 1024px) {
+      .dashboard-container {
+        grid-template-columns: 1fr;
+      }
+      .map-panel {
+        position: static;
+        order: -1; 
+        margin-bottom: 24px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 16px;
+      }
+      .title {
+        font-size: 1.3rem;
+      }
+      .class-grid {
+        grid-template-columns: 1fr;
+      }
+      .filter-bar {
+        gap: 6px;
+      }
+      .filter-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-nav">
+    <div>BSIT-I</div>
+    <div>Dev - Christ</div>
+  </div>
+
+  <h1 class="title">BSIT 1-I Class Schedule <span>BSIT - I</span></h1>
+
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterSchedule('all')">All Classes</button>
+    <button class="filter-btn" onclick="filterSchedule('f2f')">Face-to-Face</button>
+    <button class="filter-btn" onclick="filterSchedule('online')">Online</button>
+    <button class="filter-btn" onclick="filterSchedule('announcement')">Announcements</button>
+    <button class="filter-btn" onclick="filterSchedule('conflict')">Conflicts</button>
+  </div>
+
+  <div class="dashboard-container">
+    
+
+    <div id="schedule-content">
+
+
+      <div class="announcements-section announcement">
+        <div class="announcements-header">📢 Important Announcements</div>
+        <div class="class-grid">
+
+          <div class="class-card announcement-card announcement" onclick="openImageModal('images/announcement1.png')">
+            <div class="time-slot">AUG 27 | 08:00 AM - 12:00 PM (THU)</div>
+            <div class="course-code">SS 111</div>
+            <div class="course-name">Understanding the Self (BSIT I & L)</div>
+            <ul class="notes-list">
+              <li>Tackle Lessons 1-4 of Module 1</li>
+              <li>Bring water & light snacks</li>
+            </ul>
+            <div class="card-footer">
+              <span class="location-tag">Room - To Be Announced [TBA]</span>
+              <span class="type-badge badge-announcement">View Photo</span>
+            </div>
+            <div class="popover-preview">
+              <img src="images/announcement1.png" alt="SS 111 Announcement">
+              <div class="popover-title">Click to view image</div>
+            </div>
+          </div>
+
+          <div class="class-card announcement-card announcement" onclick="openImageModal('images/announcement2.png')">
+            <div class="time-slot">SEP 10 | 01:00 PM - 05:00 PM (THU)</div>
+            <div class="course-code">SS 112</div>
+            <div class="course-name">Readings in Philippine History</div>
+            <ul class="notes-list">
+              <li>Bring water & light snacks</li>
+              <li>Mandatory attendance</li>
+            </ul>
+            <div class="card-footer">
+              <span class="location-tag">Room - To Be Announced [TBA]</span>
+              <span class="type-badge badge-announcement">View Photo</span>
+            </div>
+            <div class="popover-preview">
+              <img src="images/announcement2.png" alt="SS 112 Announcement">
+              <div class="popover-title">Click to view image</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div class="day-section">
+        <h2 class="day-header">Monday</h2>
+        <div class="class-grid">
+          
+          <div class="class-card f2f" onclick="navigateToLocation('ic building')">
+            <div class="time-slot">09:30 - 11:30 AM</div>
+            <div class="course-code">IT 111</div>
+            <div class="course-name">Introduction to Computing</div>
+            <div class="card-footer">
+              <span class="location-tag">IC AES LAB A</span>
+              <span class="type-badge badge-f2f">F2F</span>
+            </div>
+            <div class="popover-preview">
+              <img src="images/IC Building.png" alt="IC AES LAB A">
+              <div class="popover-title">Location: IC AES LAB A</div>
+            </div>
+          </div>
+
+          <div class="class-card f2f" onclick="navigateToLocation('ic building')">
+            <div class="time-slot">01:30 - 02:30 PM</div>
+            <div class="course-code">IT 111</div>
+            <div class="course-name">Introduction to Computing</div>
+            <div class="card-footer">
+              <span class="location-tag">IC AES LAB A</span>
+              <span class="type-badge badge-f2f">F2F</span>
+            </div>
+            <div class="popover-preview">
+              <img src="images/IC Building.png" alt="IC AES LAB A">
+              <div class="popover-title">Location: IC AES LAB A</div>
+            </div>
+          </div>
+
+          <div class="class-card f2f" onclick="navigateToLocation('Unkown')">
+            <div class="time-slot">03:30 - 04:30 PM</div>
+            <div class="course-code">SS 112</div>
+            <div class="course-name">Readings in Philippine History</div>
+            <div class="card-footer">
+              <span class="location-tag">NO ROOM [NR]</span>
+              <span class="type-badge badge-f2f">F2F</span>
+            </div>
+            <div class="popover-preview">
+              <img src="images/NR.jpg" alt="Lecture Hall">
+              <div class="popover-title">SS 112 No Room</div>
+            </div>
+          </div>
+
+          <div class="class-card f2f" onclick="navigateToLocation('cottage 7')">
+            <div class="time-slot">04:30 - 05:30 PM</div>
+            <div class="course-code">STS 121</div>
+            <div class="course-name">Science, Technology & Society</div>
+            <div class="card-footer">
+              <span class="location-tag">Cottage 7 in Narnia</span>
+              <span class="type-badge badge-f2f">F2F</span>
+            </div>
+            <div class="popover-preview">
+              <img src="images/no post yet.jpg" alt="Cottage 7">
+              <div class="popover-title">Location: Cottage 7 (Narnia Area)</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div class="day-section">
+        <h2 class="day-header">Tuesday</h2>
+        <div class="class-grid">
+
+          <div class="class-card f2f" onclick="navigateToLocation('Unkown')">
+            <div class="time-slot">10:00 - 12:00 PM</div>
+            <div class="course-code">SS 111</div>
+            <div class="course-name">Understanding the Self</div>
+            <div class="card-footer">
+              <span class="location-tag">Please Check the Announcement</span>
+              <span class="type-badge badge-f2f">F2F</span>
+            </div>
+            <div class="popover-preview">
+              <img src="images/announcement.jpg" alt="Classroom">
+              <div class="popover-title">SS 111 Classroom View</div>
+            </div>
+          </div>
+
+          <div class="class-card f2f" onclick="navigateToLocation('Unkown')">
+            <div class="time-slot">01:30 - 02:30 PM</div>
+            <div class="course-code">PE 1</div>
+            <div class="course-name">PATH FIT 1 - Movement Enhancement</div>
+            <div class="card-footer">
+              <span class="location-tag">NO ROOM [NR]</span>
+              <span class="type-badge badge-f2f">F2F</span>
+            </div>
+            <div class="popover-preview">
+              <img src="images/unkown.jpg" alt="Gym Grounds">
+              <div class="popover-title">PATH FIT 1 / No Room</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div class="day-section">
+        <h2 class="day-header">Wednesday</h2>
+        <div class="class-grid">
+
+          <div class="class-card f2f" onclick="navigateToLocation('ic building')">
+            <div class="time-slot">11:00 - 12:00 PM</div>
+            <div class="course-code">IT 112</div>
+            <div class="course-name">Computer Programming 1</div>
+            <div class="card-footer">
+              <span class="location-tag">IC GDA LAB A</span>
+              <span class="type-badge badge-f2f">F2F</span>
+            </div>
+            <div class="popover-preview">
+              <img src="images/IC Building.png" alt="GDA LAB A">
+              <div class="popover-title">Location: IC GDA LAB A</div>
+            </div>
+          </div>
+
+          <div class="class-card f2f" onclick="navigateToLocation('ic building')">
+            <div class="time-slot">01:00 - 02:30 PM</div>
+            <div class="course-code">IT 112</div>
+            <div class="course-name">Computer Programming 1</div>
+            <div class="card-footer">
+              <span class="location-tag">IC GDA LAB A</span>
+              <span class="type-badge badge-f2f">F2F</span>
+            </div>
+            <div class="popover-preview">
+              <img src="images/IC Building.png" alt="GDA LAB A">
+              <div class="popover-title">Location: IC GDA LAB A</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div class="day-section">
+        <h2 class="day-header">Thursday</h2>
+        <div class="class-grid">
+
+          <div class="class-card online">
+            <div class="time-slot">04:30 - 06:00 PM</div>
+            <div class="course-code">SS 111</div>
+            <div class="course-name">Understanding the Self</div>
+            <div class="card-footer">
+              <span class="location-tag">Online Session</span>
+              <span class="type-badge badge-online">Online</span>
+            </div>
+            <div class="popover-preview">
+              <img src="https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?auto=format&fit=crop&w=400&q=80" alt="Online Meeting">
+              <div class="popover-title">Virtual Class Room</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div class="day-section">
+        <h2 class="day-header">Friday</h2>
+        <div class="class-grid">
+
+          <div class="class-card conflict" onclick="navigateToLocation('ic building')">
+            <div class="time-slot">11:00 AM - 12:00 PM</div>
+            <div class="course-code">IT 112 (Conflict)</div>
+            <div class="course-name">Overlaps IT 111 (9:00 - 12:00)</div>
+            <div class="card-footer">
+              <span class="location-tag">IC GDA LAB A</span>
+              <span class="type-badge badge-conflict">Conflict</span>
+            </div>
+            <div class="popover-preview">
+              <img src="images/IC Building.png" alt="Conflicting Lab">
+              <div class="popover-title">Location: IC GDA LAB A</div>
+            </div>
+          </div>
+
+          <div class="class-card conflict" onclick="navigateToLocation('ic building')">
+            <div class="time-slot">01:00 - 02:30 PM</div>
+            <div class="course-code">IT 112 (Conflict)</div>
+            <div class="course-name">Overlaps IT 111 (1:00 - 2:30)</div>
+            <div class="card-footer">
+              <span class="location-tag">IC COMLAB 2</span>
+              <span class="type-badge badge-conflict">Conflict</span>
+            </div>
+            <div class="popover-preview">
+              <img src="images/IC Building.png" alt="COMLAB 2">
+              <div class="popover-title">Location: IC COMLAB 2</div>
+            </div>
+          </div>
+
+          <div class="class-card online">
+            <div class="time-slot">02:30 - 04:00 PM</div>
+            <div class="course-code">SS 112</div>
+            <div class="course-name">Readings in Philippine History</div>
+            <div class="card-footer">
+              <span class="location-tag">Online Session</span>
+              <span class="type-badge badge-online">Online</span>
+            </div>
+            <div class="popover-preview">
+              <img src="https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?auto=format&fit=crop&w=400&q=80" alt="Online Meeting">
+              <div class="popover-title">Virtual Class Room</div>
+            </div>
+          </div>
+
+          <div class="class-card online">
+            <div class="time-slot">04:00 - 05:30 PM</div>
+            <div class="course-code">STS 121</div>
+            <div class="course-name">Science, Technology & Society</div>
+            <div class="card-footer">
+              <span class="location-tag">Online Session</span>
+              <span class="type-badge badge-online">Online</span>
+            </div>
+            <div class="popover-preview">
+              <img src="https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?auto=format&fit=crop&w=400&q=80" alt="Online Meeting">
+              <div class="popover-title">Virtual Class Room</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div class="day-section">
+        <h2 class="day-header">Saturday</h2>
+        <div class="class-grid">
+
+          <div class="class-card f2f" onclick="navigateToLocation('iads')">
+            <div class="time-slot">08:00 - 11:00 AM</div>
+            <div class="course-code">NSTP 1</div>
+            <div class="course-name">National Service Training Program</div>
+            <div class="card-footer">
+              <span class="location-tag">IADS Building / ROOM 12</span>
+              <span class="type-badge badge-f2f">F2F</span>
+            </div>
+            <div class="popover-preview">
+              <img src="images/IADS BUILDING.png" alt="IADS Room 12">
+              <div class="popover-title">Location: IADS Building / Room 12</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="map-panel">
+      <!-- Search Field -->
+      <input type="text" class="search-box" id="mapSearch" placeholder="Search clinic, cottage 7, IC building, IADS..." onkeyup="searchAndPanMap(this.value)">
+      
+
+      <div class="map-viewport" id="mapViewport" onclick="openImageModal('dnsc-map.jpg')">
+        <div class="map-container" id="mapContainer">
+          <img class="map-img" id="mapImg" src="dnsc-map.jpg" alt="DNSC Campus Map">
+          
+
+          <div class="map-marker" id="campusMarker">
+            <div class="radar-pin-container">
+              <div class="wave-ring"></div>
+              <div class="wave-ring"></div>
+              <div class="radar-dot"></div>
+            </div>
+            <div class="pin-label" id="markerLabel">Building</div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="location-details-card" id="detailsCard">
+        <div class="details-img-container">
+          <button class="close-details-btn" onclick="closeDetailsCard()">✕</button>
+          <img class="details-img" id="detailsImg" src="" alt="Building Image">
+        </div>
+        <div class="details-title" id="detailsTitle">Clinic</div>
+        <div class="details-badges">
+          <span class="details-badge" id="detailsFloor">• Ground floor</span>
+          <span class="details-badge" id="detailsBuilding">IADS Building</span>
+        </div>
+        <div class="details-info" id="detailsInfo">No staff listed</div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="modal-overlay" id="imageModal" onclick="closeImageModal()">
+    <img class="modal-content" id="modalImg" src="" alt="Clear View">
+  </div>
+
+  <script>
+    const locationsMap = {
+      "clinic": {
+        x: 65.23, y: 34,
+        title: "Clinic",
+        floor: "Ground Floor",
+        building: "Medical Clinic",
+        info: "Campus Medical & Dental Health Services.",
+        img: "images/clinic.jpg"
+      },
+      "iads": {
+        x: 67, y: 39,
+        title: "IADS Building",
+        floor: "Room 12",
+        building: "IADS Building",
+        info: "Institute of Advanced Decision Sciences.",
+        img: "images/IADS BUILDING.png"
+      },
+      "ic building": {
+        x: 67.5, y: 52,
+        title: "IC Building",
+        floor: "AES / GDA / ComLab 2",
+        building: "Institute of Computing",
+        info: "Institute of Computing Laboratories.",
+        img: "images/IC Building.png"
+      },
+      "cottage 7": {
+        x: 11.2, y: 35.2,
+        title: "Cottage 7",
+        floor: "Outdoor Cottage",
+        building: "Narnia Area",
+        info: "Cottage 7 Classrooms Grounds.",
+        img: "images/no post yet.jpg"
+      },
+      "gym": {
+        x: 57.5, y: 61,
+        title: "Gymnasium",
+        floor: "Ground Floor",
+        building: "Main Gym",
+        info: "Sports & Physical Education Complex.",
+        img: "images/gym.jpg"
+      },
+      "admin": {
+        x: 63.2, y: 82,
+        title: "Administration Building",
+        floor: "Ground Floor",
+        building: "Main Admin",
+        info: "Administrative Offices & Headquarters.",
+        img: "images/admin.jpg"
+      }
+    };
+
+    function filterSchedule(category) {
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const cards = document.querySelectorAll('.class-card, .announcements-section');
+      cards.forEach(card => {
+        if (category === 'all') {
+          card.style.display = 'block';
+        } else {
+          card.style.display = card.classList.contains(category) ? 'block' : 'none';
+        }
+      });
+    }
+
+    function navigateToLocation(locationKey) {
+      document.getElementById('mapSearch').value = locationKey;
+      searchAndPanMap(locationKey);
+      
+      // Auto-scroll to map location smooth on mobile devices
+      if (window.innerWidth <= 1024) {
+        document.querySelector('.map-panel').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function searchAndPanMap(query) {
+      const q = query.toLowerCase().trim();
+      const container = document.getElementById('mapContainer');
+      const marker = document.getElementById('campusMarker');
+      const markerLabel = document.getElementById('markerLabel');
+      const viewport = document.getElementById('mapViewport');
+
+      if (!q) {
+        container.style.transform = 'translate(0px, 0px) scale(1)';
+        marker.classList.remove('active');
+        closeDetailsCard();
+        return;
+      }
+
+      let foundKey = Object.keys(locationsMap).find(key => key === q);
+
+      if (!foundKey) {
+        foundKey = Object.keys(locationsMap).find(key => {
+          const regex = new RegExp(`\\b${q}\\b`, 'i');
+          return regex.test(key);
+        });
+      }
+
+      if (!foundKey) {
+        foundKey = Object.keys(locationsMap).find(key => key.includes(q));
+      }
+
+      if (foundKey) {
+        const loc = locationsMap[foundKey];
+        const zoomLevel = 2.2;
+        
+        const viewportWidth = viewport.clientWidth;
+        const viewportHeight = viewport.clientHeight;
+
+        const targetX = (loc.x / 100) * viewportWidth;
+        const targetY = (loc.y / 100) * viewportHeight;
+
+        let panX = (viewportWidth / 2) - (targetX * zoomLevel);
+        let panY = (viewportHeight / 2) - (targetY * zoomLevel);
+
+        const minPanX = viewportWidth - (viewportWidth * zoomLevel);
+        const minPanY = viewportHeight - (viewportHeight * zoomLevel);
+
+        panX = Math.min(0, Math.max(minPanX, panX));
+        panY = Math.min(0, Math.max(minPanY, panY));
+
+        container.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+        
+        marker.style.left = `${loc.x}%`;
+        marker.style.top = `${loc.y}%`;
+        markerLabel.innerText = loc.title;
+        marker.classList.add('active');
+
+        showDetailsCard(loc);
+      } else {
+        container.style.transform = 'translate(0px, 0px) scale(1)';
+        marker.classList.remove('active');
+        closeDetailsCard();
+      }
+    }
+
+    function showDetailsCard(loc) {
+      document.getElementById('detailsImg').src = loc.img;
+      document.getElementById('detailsTitle').innerText = loc.title;
+      document.getElementById('detailsFloor').innerText = `• ${loc.floor}`;
+      document.getElementById('detailsBuilding').innerText = loc.building;
+      document.getElementById('detailsInfo').innerText = loc.info;
+      document.getElementById('detailsCard').classList.add('active');
+    }
+
+    function closeDetailsCard() {
+      document.getElementById('detailsCard').classList.remove('active');
+    }
+
+    function openImageModal(imgSrc) {
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImg');
+      modalImg.src = imgSrc;
+      modal.classList.add('active');
+    }
+
+    function closeImageModal() {
+      document.getElementById('imageModal').classList.remove('active');
+    }
+  </script>
+</body>
+</html>
